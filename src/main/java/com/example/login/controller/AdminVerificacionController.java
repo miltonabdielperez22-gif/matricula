@@ -46,7 +46,7 @@ public class AdminVerificacionController {
             return ResponseEntity.status(401).build();
 
         // No es administrador
-        if (!"administrador".equalsIgnoreCase(user.getRol()))
+        if (!"admin".equalsIgnoreCase(user.getRol()))
             return ResponseEntity.status(403).build();
 
         return ResponseEntity.ok().build();
