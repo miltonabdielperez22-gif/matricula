@@ -38,16 +38,15 @@ async function verificarAdmin() {
         });
 
         if (res.ok) {
-            // IMPORTANTE: Guardar en sesión que el admin fue verificado
+            // Guardar en sesión que el admin fue verificado
             await fetch("/api/guardar-verificacion-admin", {
                 method: "POST"
             });
-            
+
             // Mostrar modal de nuevo usuario
             ocultarModal("modalCredenciales");
             document.getElementById("nuevo-user").value = "";
             document.getElementById("nuevo-pass").value = "";
-            // 🔥 NUEVO: Resetear selector de rol
             const rolSelect = document.getElementById("nuevo-rol");
             if (rolSelect) {
                 rolSelect.value = "docente";
@@ -70,7 +69,6 @@ async function crearUsuario(e) {
 
     const username = document.getElementById("nuevo-user").value.trim();
     const password = document.getElementById("nuevo-pass").value;
-    // 🔥 NUEVO: Obtener el rol seleccionado
     const rolSelect = document.getElementById("nuevo-rol");
     const rol = rolSelect ? rolSelect.value : "docente";
     const errorDiv = document.getElementById("error-crear");
@@ -82,17 +80,15 @@ async function crearUsuario(e) {
     }
 
     try {
-        // 🔥 MODIFICADO: Incluir el rol en los parámetros
-        const params = new URLSearchParams({ 
-            username, 
-            password,
-            rol: rol 
-        });
-        
+        // ✅ Enviar como JSON (no form-urlencoded)
         const res = await fetch("/api/crear-usuario", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: params.toString()
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username,
+                password,
+                rol
+            })
         });
 
         if (res.ok) {
