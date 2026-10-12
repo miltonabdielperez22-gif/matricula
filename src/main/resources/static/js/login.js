@@ -89,7 +89,7 @@ async function crearUsuario(e) {
             rol: rol 
         });
         
-        const res = await fetch("/crear-usuario-desde-login", {
+        const res = await fetch("/api/crear-usuario", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: params.toString()
