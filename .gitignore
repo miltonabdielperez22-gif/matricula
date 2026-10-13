@@ -32,3 +32,21 @@ build/
 ### VS Code ###
 .vscode/
 /nbproject/
+
+# Configuración local con secretos
+src/main/resources/application.properties
+src/main/resources/application-*.properties
+
+# IDE
+.idea/
+nbactions.xml
+*.iml
+
+# Archivos temporales
+newhtml.html
+target/
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
