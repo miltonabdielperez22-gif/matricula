@@ -33,10 +33,6 @@ build/
 .vscode/
 /nbproject/
 
-# Configuración local con secretos
-src/main/resources/application.properties
-src/main/resources/application-*.properties
-
 # IDE
 .idea/
 nbactions.xml
@@ -50,8 +46,6 @@ target/
 # Sistema operativo
 .DS_Store
 Thumbs.db
-# Plantilla de configuración (no subir)
-src/main/resources/application.properties.example
 
 # Variables de entorno (NO subir)
 .env
