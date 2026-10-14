@@ -52,3 +52,8 @@ target/
 Thumbs.db
 # Plantilla de configuración (no subir)
 src/main/resources/application.properties.example
+
+# Variables de entorno (NO subir)
+.env
+.env.local
+.env.*.local
