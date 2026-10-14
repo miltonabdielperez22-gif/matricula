@@ -50,5 +50,5 @@ target/
 # Sistema operativo
 .DS_Store
 Thumbs.db
-# Excepción: SÍ subir la plantilla
-!src/main/resources/application.properties.example
+# Plantilla de configuración (no subir)
+src/main/resources/application.properties.example
