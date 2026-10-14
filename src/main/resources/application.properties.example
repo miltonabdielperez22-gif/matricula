@@ -1,0 +1,21 @@
+# ============================================================
+# PLANTILLA DE CONFIGURACIÓN
+# ============================================================
+# Copia este archivo como 'application.properties' y ajusta
+# los valores según tu entorno. NO subas el archivo real al repo.
+#
+# Las variables ${...} se leen de variables de entorno.
+# En producción (Railway, Heroku, etc.) se configuran en el panel.
+# ============================================================
+
+spring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+spring.datasource.username=${PGUSER}
+spring.datasource.password=${PGPASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+spring.thymeleaf.cache=false
+server.port=${PORT:8080}
