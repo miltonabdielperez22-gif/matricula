@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - Matrículas INO</title>
     <link rel="stylesheet" th:href="@{/css/pagos.css}">
+    <style>
+        /* Estilos para el Modal de Filtro */
+        .modal-filtro {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-filtro-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-filtro-content h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .modal-filtro-content p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .modal-filtro-content .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn-cancelar {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-confirmar {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-confirmar:hover { background: #218838; }
+        .btn-cancelar:hover { background: #d4d4d4; }
+    </style>
 </head>
 <body>
 
@@ -13,7 +69,7 @@
     <div class="page-header">
         <div>
             <h1>Reportes</h1>
-            <p class="subtitle">Descargá los datos del sistema en PDF o Excel</p>
+            <p class="subtitle">Descargá los datos del sistema en PDF</p>
         </div>
     </div>
 
@@ -41,20 +97,10 @@
             <div class="reporte-icono">📊</div>
             <h3>Pagos por mes</h3>
             <p>Listado de estudiantes con su estado de pago para el mes seleccionado.</p>
-            <div class="reporte-filtros">
-                <select id="mes-pagos">
-                    <option th:each="i : ${#numbers.sequence(1,12)}"
-                            th:value="${i}"
-                            th:text="${meses[i]}"
-                            th:selected="${i == #dates.day(#dates.createNow())}">
-                    </option>
-                </select>
-                <input type="number" id="anio-pagos"
-                       th:value="${anioActual}" min="2020" max="2099">
-            </div>
-            <a id="btn-excel-pagos" class="btn btn-excel" onclick="descargarPagos()">
-                ⬇ Descargar PDF
-            </a>
+            
+            <button class="btn btn-excel" style="width: 100%;" onclick="abrirModalPagos()">
+                ⬇ Generar Reporte PDF
+            </button>
         </div>
 
         <!-- REPORTE MATRÍCULAS -->
@@ -62,9 +108,10 @@
             <div class="reporte-icono">🎓</div>
             <h3>Matrículas</h3>
             <p>Listado completo de todos los estudiantes matriculados en el sistema.</p>
-            <a th:href="@{/reportes/pdf/matriculas}" class="btn btn-excel">
-                ⬇ Descargar PDF
-            </a>
+            
+            <button class="btn btn-excel" style="width: 100%;" onclick="abrirModalMatriculas()">
+                ⬇ Generar Reporte PDF
+            </button>
         </div>
 
     </div>
@@ -72,12 +119,87 @@
 
 <a th:href="@{/dashboard}" class="volver-dashboard">← Dashboard</a>
 
+<!-- ========================================== -->
+<!-- MODAL PARA FILTRO DE PAGOS                 -->
+<!-- ========================================== -->
+<div id="modalPagos" class="modal-filtro">
+    <div class="modal-filtro-content">
+        <h3>📊 Filtrar Pagos</h3>
+        <p>Selecciona el mes y año para generar el PDF.</p>
+        
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <select id="modal-mes-pagos" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc; width: 50%;">
+                <option th:each="i : ${#numbers.sequence(1,12)}"
+                        th:value="${i}"
+                        th:text="${meses[i]}">
+                </option>
+            </select>
+            <input type="number" id="modal-anio-pagos" th:value="${anioActual}" 
+                   style="padding: 8px; border-radius: 6px; border: 1px solid #ccc; width: 50%;">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-cancelar" onclick="cerrarModales()">Cancelar</button>
+            <button class="btn-confirmar" onclick="generarPdfPagos()">Generar PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL PARA FILTRO DE MATRÍCULAS            -->
+<!-- ========================================== -->
+<div id="modalMatriculas" class="modal-filtro">
+    <div class="modal-filtro-content">
+        <h3>🎓 Generar Reporte de Matrículas</h3>
+        <p>Se generará un PDF con la lista completa de estudiantes.</p>
+        
+        <div class="btn-group">
+            <button class="btn-cancelar" onclick="cerrarModales()">Cancelar</button>
+            <button class="btn-confirmar" onclick="generarPdfMatriculas()">Generar PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- SCRIPTS                                    -->
+<!-- ========================================== -->
 <script>
-function descargarPagos() {
-    const mes  = document.getElementById("mes-pagos").value;
-    const anio = document.getElementById("anio-pagos").value;
-    window.location.href = `/reportes/pdf/pagos?mes=${mes}&anio=${anio}`;
-}
+    // Abrir modal de pagos
+    function abrirModalPagos() {
+        document.getElementById("modalPagos").style.display = "flex";
+    }
+
+    // Abrir modal de matrículas
+    function abrirModalMatriculas() {
+        document.getElementById("modalMatriculas").style.display = "flex";
+    }
+
+    // Cerrar modales
+    function cerrarModales() {
+        document.getElementById("modalPagos").style.display = "none";
+        document.getElementById("modalMatriculas").style.display = "none";
+    }
+
+    // Generar PDF de pagos
+    function generarPdfPagos() {
+        const mes = document.getElementById("modal-mes-pagos").value;
+        const anio = document.getElementById("modal-anio-pagos").value;
+        window.location.href = `/reportes/pdf/pagos?mes=${mes}&anio=${anio}`;
+        cerrarModales();
+    }
+
+    // Generar PDF de matrículas
+    function generarPdfMatriculas() {
+        window.location.href = `/reportes/pdf/matriculas`;
+        cerrarModales();
+    }
+
+    // Cerrar al hacer clic fuera del modal
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-filtro')) {
+            cerrarModales();
+        }
+    }
 </script>
 <script src="/js/security.js"></script>
 </body>
