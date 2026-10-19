@@ -49,7 +49,8 @@ public class ReportePdfController {
     @GetMapping("/reportes/pdf/matriculas")
     public void descargarPdfMatriculas(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=\"matriculas.pdf\"");
+        // Cambiado a inline para vista previa en el navegador
+        response.setHeader("Content-Disposition", "inline; filename=\"matriculas.pdf\"");
 
         List<Estudiante> estudiantes = estudianteRepository.findAll();
 
@@ -102,7 +103,8 @@ public class ReportePdfController {
             HttpServletResponse response) throws IOException {
 
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=\"pagos_" + MESES[mes] + "_" + anio + ".pdf\"");
+        // Cambiado a inline para vista previa en el navegador
+        response.setHeader("Content-Disposition", "inline; filename=\"pagos_" + MESES[mes] + "_" + anio + ".pdf\"");
 
         List<Estudiante> estudiantes = estudianteRepository.findAll();
 
