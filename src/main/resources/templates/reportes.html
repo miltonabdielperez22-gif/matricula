@@ -53,7 +53,7 @@
                        th:value="${anioActual}" min="2020" max="2099">
             </div>
             <a id="btn-excel-pagos" class="btn btn-excel" onclick="descargarPagos()">
-                ⬇ Descargar Excel
+                ⬇ Descargar PDF
             </a>
         </div>
 
@@ -76,7 +76,7 @@
 function descargarPagos() {
     const mes  = document.getElementById("mes-pagos").value;
     const anio = document.getElementById("anio-pagos").value;
-    window.location.href = `/reportes/excel/pagos?mes=${mes}&anio=${anio}`;
+    window.location.href = `/reportes/pdf/pagos?mes=${mes}&anio=${anio}`;
 }
 </script>
 <script src="/js/security.js"></script>
